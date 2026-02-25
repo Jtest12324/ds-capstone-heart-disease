@@ -8,32 +8,25 @@ on:
 jobs:
   render:
     runs-on: ubuntu-latest
+    container:
+      image: rocker/verse:4.3.0
     permissions:
       contents: write
     steps:
       - uses: actions/checkout@v4
 
-      - uses: r-lib/actions/setup-r@v2
-        with:
-          r-version: '4.3.0'
-
-      - name: Install system dependencies
+      - name: Install additional R packages
         run: |
-          sudo apt-get update
-          sudo apt-get install -y texlive-xetex texlive-fonts-recommended texlive-latex-extra pandoc
-
-      - name: Install R packages
-        run: |
-          Rscript -e "install.packages(c('rmarkdown','tidyverse','caret','randomForest','e1071','pROC','knitr'), repos='http://cran.us.r-project.org')"
+          Rscript -e "install.packages(c('caret','randomForest','e1071','pROC'), repos='https://cran.us.r-project.org')"
 
       - name: Render Rmd to PDF
         run: |
           Rscript -e "rmarkdown::render('heart_disease_report.Rmd', output_format='pdf_document', output_file='heart_disease_report.pdf')"
 
-      - name: Commit PDF to repository
+      - name: Commit and push PDF
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add heart_disease_report.pdf
-          git diff --staged --quiet || git commit -m "Add rendered PDF report"
+          git diff --quiet && git diff --staged --quiet || git commit -m "Add rendered PDF report"
           git push
