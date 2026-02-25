@@ -26,7 +26,7 @@ jobs:
 
       - name: Install R packages
         run: |
-          Rscript -e "install.packages(c('rmarkdown','knitr','tidyverse','randomForest','e1071','pROC','caret'), Ncpus=2)"
+          Rscript -e "install.packages(c('rmarkdown','knitr','tidyverse','randomForest','e1071','pROC'), Ncpus=2)"
 
       - name: Render Rmd to PDF
         run: |
